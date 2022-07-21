@@ -37,7 +37,7 @@
 
 ### 当前时间设置
 
-- 方式一：直接点击字幕的某一行，会自动设置当前时间为该行字幕的时间。
+- 方式一：直接双击字幕的某一行，会自动设置当前时间为该行字幕的时间。
 
   <img src="https://raw.githubusercontent.com/JuchiaLu/subtitle-speaker/master/img/ff30d345-ed2d-4d6c-bbc8-6542e7a6a16c.gif" alt="ff30d345-ed2d-4d6c-bbc8-6542e7a6a16c" style="zoom: 67%;" />
 
