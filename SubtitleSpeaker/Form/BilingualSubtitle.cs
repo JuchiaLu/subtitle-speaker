@@ -11,6 +11,8 @@ namespace SubtitleSpeaker
     {
         public BilingualSubtitle(IEnumerable<SubtitleItem> subtitleItems)
         {
+            subtitleItems = subtitleItems.OrderBy(item => item.StartTime);
+            
             int lineIndex = 0;
             subtitleItems.ToList().ForEach(subtitleItem =>
             {
