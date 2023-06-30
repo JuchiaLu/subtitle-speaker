@@ -32,11 +32,17 @@
     <Setting Name="FormMainVolume" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">90</Value>
     </Setting>
-    <Setting Name="FormMainVoiceIndex" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+    <Setting Name="FormMainVoiceName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="FormMainRate" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="FormMainMainLanguage" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FormMainSubLanguage" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

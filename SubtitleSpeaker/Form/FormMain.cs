@@ -1,9 +1,11 @@
-﻿using SubtitlesParser.Classes.Parsers;
+﻿using SubtitlesParser.Classes;
+using SubtitlesParser.Classes.Parsers;
 using SubtitlesParser.Classes.Writers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Speech.Synthesis;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows.Forms;
@@ -18,182 +20,293 @@ namespace SubtitleSpeaker
         {
             UnReady  = -1,
             Ready = 0,
-            CountDown = 1,
+            CountDowning = 1,
             Playing = 2,
             Paused = 3
         }
 
-        public FormMain()
+        private readonly Dictionary<string, string> languageDict = new Dictionary<string, string>()
         {
-            InitializeComponent();
-        }
+            {"Afrikaans", "afr"},
+            {"Albanian", "sqi"},
+            {"Arabic", "ara"},
+            {"Bengali", "ben"},
+            {"Bulgarian", "bul"},
+            {"Chinese", "zho"},
+            {"Croatian", "hrv"},
+            {"Czech", "ces"},
+            {"Danish", "dan"},
+            {"Dutch", "nld"},
+            {"English", "eng"},
+            {"Estonian", "est"},
+            {"Finnish", "fin"},
+            {"French", "fra"},
+            {"German", "deu"},
+            {"Greek", "ell"},
+            {"Gujarati", "guj"},
+            {"Hebrew", "heb"},
+            {"Hindi", "hin"},
+            {"Hungarian", "hun"},
+            {"Indonesian", "ind"},
+            {"Italian", "ita"},
+            {"Japanese", "jpn"},
+            {"Kannada", "kan"},
+            {"Korean", "kor"},
+            {"Latvian", "lav"},
+            {"Lithuanian", "lit"},
+            {"Macedonian", "mkd"},
+            {"Malayalam", "mal"},
+            {"Marathi", "mar"},
+            {"Nepali", "nep"},
+            {"Norwegian", "nor"},
+            {"Panjabi", "pan"},
+            {"Persian", "fas"},
+            {"Polish", "pol"},
+            {"Portuguese", "por"},
+            {"Romanian", "ron"},
+            {"Russian", "rus"},
+            {"Slovak", "slk"},
+            {"Slovenian", "slv"},
+            {"Somali", "som"},
+            {"Spanish", "spa"},
+            {"Swahili", "swa"},
+            {"Swedish", "swe"},
+            {"Tagalog", "tgl"},
+            {"Tamil", "tam"},
+            {"Telugu", "tel"},
+            {"Thai", "tha"},
+            {"Turkish", "tur"},
+            {"Twi", "twi"},
+            {"Ukrainian", "ukr"},
+            {"Urdu", "urd"},
+            {"Vietnamese", "vie"}
+        };
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            //初始化计时器
-            this.timer.AutoReset = true;
-            this.timer.Enabled = true;
-            this.timer.Stop();
-            this.timer.Elapsed += new ElapsedEventHandler(this.TimerUpHandler);
+        
+        private readonly Timer timer = new Timer(1000);
 
-            // 初始化语音合成器
-            foreach (var voice in this.speechSynthesizer.GetInstalledVoices())
-            {
-                this.comboBoxInstalledVoices.Items.Add(voice.VoiceInfo.Name);
-            }
-            this.comboBoxInstalledVoices.SelectedIndex = 0;
-
-            //初始化遮挡工具：关闭时提示通知栏更新状态
-            formMask.VisibleChanged += new EventHandler(this.toolStripMenuItemMaskTool_Click);
-
-            //加载配置
-            this.trackBarRate.Value = Properties.Settings.Default.FormMainRate;
-            this.toolStripMenuItemAutoRate.Checked = Properties.Settings.Default.FormMainAutoRate;
-            this.trackBarVolume.Value = Properties.Settings.Default.FormMainVolume;
-            this.comboBoxInstalledVoices.SelectedIndex = Properties.Settings.Default.FormMainVoiceIndex;
-            this.toolStripMenuItemCountDownPlay.Checked = Properties.Settings.Default.FormMainCountDownPlay;
-        }
-
-
-        private BilingualSubtitle bilingualSubtitle;
+        private readonly SpeechSynthesizer speechSynthesizer = new SpeechSynthesizer();
 
 
         private readonly SubParser subParser = new SubParser();
 
         private readonly SrtWriter srtWriter = new SrtWriter();
 
-        private readonly SpeechSynthesizer speechSynthesizer = new SpeechSynthesizer();
-
-        private readonly Timer timer = new Timer(1000);
 
         private readonly FormMask formMask = new FormMask();
 
+        private readonly FormSetCurrentTime formSetCurrentTime = new FormSetCurrentTime();
 
+        private readonly FormSetting formSetting;
+
+
+        private string mainLanguage = "cho";
+
+        private string subLanguage = "eng";
+
+        private int rate = 0;
+
+
+        private BilingualSubtitle bilingualSubtitle;
 
         private int currentTimeTotalSeconds = 0;
 
         private int lastTimeTotalSeconds = 0;
 
-        private SubtitleSpeakerState subtitleSpeakerState = SubtitleSpeakerState.UnReady;
+        private SubtitleSpeakerState state = SubtitleSpeakerState.UnReady;
 
+
+        public FormMain()
+        {
+            this.InitializeComponent();
+
+            //初始化计时器
+            this.timer.AutoReset = true;
+            this.timer.Enabled = true;
+            this.timer.Stop();
+            this.timer.Elapsed += new ElapsedEventHandler(this.TimerUpHandler);
+
+            //遮挡工具事件绑定：显示状态变化时，通知状态栏更新勾选状态
+            this.formMask.VisibleChanged += new EventHandler(this.toolStripMenuItemMaskTool_Click);
+
+
+            //尝试从系统全球化信息覆盖设置主语言
+            string cultureLanguage = System.Globalization.CultureInfo.CurrentCulture.ThreeLetterISOLanguageName;
+            if (this.languageDict.ContainsValue(cultureLanguage))
+            {
+                this.mainLanguage = cultureLanguage;
+            }
+            //尝试从用户配置文件覆盖设置主语言
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.FormMainMainLanguage))
+            {
+                this.mainLanguage = Properties.Settings.Default.FormMainMainLanguage;
+            }
+            //尝试从用户配置文件覆盖设置次语言
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.FormMainSubLanguage))
+            {
+                this.subLanguage = Properties.Settings.Default.FormMainSubLanguage;
+            }
+
+            
+            //初始化语音合成器
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.FormMainVoiceName))
+            {
+                try 
+                {
+                    this.speechSynthesizer.SelectVoice(Properties.Settings.Default.FormMainVoiceName); //说话人
+                }
+                catch(Exception ex)
+                {
+                    //do nothing
+                }
+            }
+            this.rate = this.speechSynthesizer.Rate = Properties.Settings.Default.FormMainRate;  //语速
+            this.speechSynthesizer.Volume = Properties.Settings.Default.FormMainVolume;  //音量
+
+            //初始化设置窗口（注：rate 改变会关闭自动语速，所以该代码需要放在加载用户配置的 AutoRate 之前）
+            this.formSetting = new FormSetting(this.languageDict, this.speechSynthesizer.GetInstalledVoices(), this);
+            this.formSetting.SetValue(this.mainLanguage, this.subLanguage, this.speechSynthesizer.Voice.Name, this.speechSynthesizer.Volume, this.rate);
+
+            this.toolStripMenuItemAutoRate.Checked = Properties.Settings.Default.FormMainAutoRate; //是否开启自动语速
+            this.toolStripMenuItemCountDownPlay.Checked = Properties.Settings.Default.FormMainCountDownPlay; //是否开启倒计时播放
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            
+        }
 
 
         //计时器相关
-
         private delegate void TimeUpDelegate();
        
         private void TimerUpHandler(object sender, ElapsedEventArgs e)
         {
-           Invoke(new TimeUpDelegate(TimerUpAction)); 
+           this.Invoke(new TimeUpDelegate(this.TimerUpAction)); 
         }
        
         private void TimerUpAction()
         {
             // 判断是否结束
-            if (this.currentTimeTotalSeconds > this.lastTimeTotalSeconds && this.speechSynthesizer.State != SynthesizerState.Speaking)
+            if (this.currentTimeTotalSeconds > this.lastTimeTotalSeconds)
             {
-                Stop();
-                return;
+                //等待最后一条字幕朗读完后才停止
+                if (this.speechSynthesizer.State != SynthesizerState.Speaking)
+                {
+                    this.Stop();
+                }
             }
-
-            //刷新显示当前时间
-            TimeSpan currentTime = TimeSpan.FromSeconds(this.currentTimeTotalSeconds);
-            this.labelCurrentTime.Text = $"{currentTime:hh\\:mm\\:ss}";
-
-            //刷新显示进度条
-            UpdateProgressBar();
-
-            //是否有字幕需要朗读
-            if (this.bilingualSubtitle.Has(this.currentTimeTotalSeconds))
+            else
             {
-                // 高亮当前行字幕
-                Highlight(this.bilingualSubtitle.GetLineIndex(this.currentTimeTotalSeconds));
+                //刷新显示当前时间
+                TimeSpan currentTime = TimeSpan.FromSeconds(this.currentTimeTotalSeconds);
+                this.labelCurrentTime.Text = $"{currentTime:hh\\:mm\\:ss}";
 
-                // 朗读当前行字幕
-                Speech(this.currentTimeTotalSeconds);
+                //刷新显示进度条
+                this.UpdateProgressBar();
+
+                if (this.bilingualSubtitle.Has(this.currentTimeTotalSeconds))
+                {
+                    // 高亮当前行字幕
+                    this.HighlightLine(this.bilingualSubtitle.GetLineIndex(this.currentTimeTotalSeconds));
+
+                    // 朗读当前行字幕
+                    this.SpeechLine(this.currentTimeTotalSeconds);
+                }
+
+                this.currentTimeTotalSeconds += 1;
             }
-
-            this.currentTimeTotalSeconds += 1;
         }
-
 
 
         //通用
-        public void SetCurrentTime(int currentTimeTotalSeconds)
+        public void SetCurrentTotalSeconds(int currentTimeTotalSeconds)
         {
             this.currentTimeTotalSeconds = currentTimeTotalSeconds;
-            TimeSpan time = TimeSpan.FromSeconds(this.currentTimeTotalSeconds);
-            this.labelCurrentTime.Text = $"{time:hh\\:mm\\:ss}";
+            
+            TimeSpan currentTime = TimeSpan.FromSeconds(this.currentTimeTotalSeconds);
+            this.labelCurrentTime.Text = $"{currentTime:hh\\:mm\\:ss}";
 
-            Highlight(bilingualSubtitle.GetNearLineIndex(currentTimeTotalSeconds));
+            this.UpdateProgressBar();
 
-            UpdateProgressBar();
+            this.HighlightLine(this.bilingualSubtitle.GetNearLineIndex(currentTimeTotalSeconds));
         }
         
-        public void SetLastTime(int lastTimeTotalSeconds)
+        public void SetLastTotalSeconds(int lastTimeTotalSeconds)
         {
             this.lastTimeTotalSeconds = lastTimeTotalSeconds;
+
             TimeSpan time = TimeSpan.FromSeconds(this.lastTimeTotalSeconds);
             this.labelLastTime.Text = $"{time:hh\\:mm\\:ss}";
+
+            this.UpdateProgressBar();
         }
         
-        public int GetCurrentTime()
+        public int GetCurrentTotalSeconds()
         {
             return this.currentTimeTotalSeconds;
         }
         
-        public int GetLastTime()
+        public int GetLastTotalSeconds()
         {
             return this.lastTimeTotalSeconds;
         }
-        
-        private void Highlight(int lineIndex)
+
+        private void UpdateProgressBar()
         {
-            if (lineIndex >= 4)
+            //转换成 double，相除后才能得到小数，小数再乘以 100 得到百分比
+            double currentTimeTotalSeconds = this.currentTimeTotalSeconds;
+            double lastTimeTotalSeconds = this.lastTimeTotalSeconds;
+
+            if (lastTimeTotalSeconds != 0 && currentTimeTotalSeconds <= lastTimeTotalSeconds)
             {
-                this.richTextBoxSubtitle.SelectionStart = this.richTextBoxSubtitle.GetFirstCharIndexFromLine(lineIndex - 4);
+                this.progressBar.Value = (int)(currentTimeTotalSeconds / lastTimeTotalSeconds * 100);
+            }
+        }
+
+        private void HighlightLine(int index)
+        {
+            //滚动到该行的前四行
+            if (index >= 4)
+            {
+                this.richTextBoxSubtitle.SelectionStart = this.richTextBoxSubtitle.GetFirstCharIndexFromLine(index - 4);
                 this.richTextBoxSubtitle.SelectionLength = 0;
                 this.richTextBoxSubtitle.ScrollToCaret();
             }
-            this.richTextBoxSubtitle.SelectionStart = this.richTextBoxSubtitle.GetFirstCharIndexFromLine(lineIndex);
-            this.richTextBoxSubtitle.SelectionLength = this.richTextBoxSubtitle.Lines[lineIndex].Length;
+            //高亮该行
+            this.richTextBoxSubtitle.SelectionStart = this.richTextBoxSubtitle.GetFirstCharIndexFromLine(index);
+            this.richTextBoxSubtitle.SelectionLength = this.richTextBoxSubtitle.Lines[index].Length;
         }
         
-        private void UpdateProgressBar()
+        private void SpeechLine(int startTimeTotalSeconds)
         {
-            double temp = this.currentTimeTotalSeconds;
-            double temp2 = this.lastTimeTotalSeconds;
-            if (this.lastTimeTotalSeconds != 0)
-                this.progressBar.Value = (int)(temp / temp2 * 100);
-        }
-        
-        private void Speech(int startTimeTotalSeconds)
-        {
-            // TODO 这里的语速表只是测试少量数据得出的，不太精准
-            int CalculateSpeechRate(int totalMilliseconds, string speechLine)
+            string speechLine = this.bilingualSubtitle.GetSpeechLine(startTimeTotalSeconds);
+
+            // TODO 这里的语速表只是测试少量数据得出的，不太精准，而且也不支持多语言
+            static int CalculateSpeechRate(string speechLine, int durationMilliseconds)
             {
-                int words;
+                int wordCount;
 
                 if (Regex.IsMatch(speechLine, "[\u4e00-\u9fa5]"))
-                    words = speechLine.Length;
+                    wordCount = speechLine.Length;
                 else
-                    words = speechLine.Split(" ").Length;
+                    wordCount = speechLine.Split(" ").Length;
 
-                if (words == 0) return 0;
+                if (wordCount == 0) return 0;
 
-                double x = totalMilliseconds / words;
+                double x = durationMilliseconds / wordCount;
 
                 if (x <= 95.50371111111112)
                 {
-                    return 10;
+                    return 7; //return 10
                 }
                 else if (x > 95.50371111111112 && x <= 106.09305)
                 {
-                    return 9;
+                    return 7; //return 9
                 }
                 else if (x > 106.09305 && x <= 117.57281666666667)
                 {
-                    return 8;
+                    return 7; //return 8
                 }
                 else if (x > 117.57281666666667 && x <= 130.91011111111112)
                 {
@@ -229,11 +342,15 @@ namespace SubtitleSpeaker
                 }
             }
 
-            string speechLine = this.bilingualSubtitle.GetSpeechLine(startTimeTotalSeconds);
-
+            //如果开启自动语速，则计算语速 
             if (this.toolStripMenuItemAutoRate.Checked)
             {
-                this.speechSynthesizer.Rate = CalculateSpeechRate(this.bilingualSubtitle.GetSpeechLineTotalMilliseconds(startTimeTotalSeconds), speechLine);
+                int durationMilliseconds = this.bilingualSubtitle.GetSpeechLineDurationMilliseconds(startTimeTotalSeconds);
+                this.speechSynthesizer.Rate = CalculateSpeechRate(speechLine, durationMilliseconds);
+            }
+            else
+            {
+                this.speechSynthesizer.Rate = this.rate;
             }
 
             this.speechSynthesizer.SpeakAsyncCancelAll();
@@ -241,27 +358,54 @@ namespace SubtitleSpeaker
         }
 
 
-
         // 打开文件相关
         private void buttonOpenFile_Click(object sender, EventArgs e)
         {
+            //过滤文件格式
             this.openFileDialog.Filter = "All Supported Formats|*.srt;*.sub;*.ssa;*.ass;*.ttml;*.vtt;*.xml|" +
             "SubRip|*.srt|MicroDvd|*.sub|SubViewer|*.sub|SubStationAlpha|*.ssa|AdvancedSubStationAlpha|*.ass|TTML|*.ttml|WebVTT|*.vtt|YoutubeXml|*.xml";
 
+            //清空历史选择名称
             this.openFileDialog.FileName = "";
 
             if (this.openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                OpenFile(this.openFileDialog.FileName);
+                this.OpenFile(this.openFileDialog.FileName);
             }   
         }
-        
-        private void OpenFile(string fileFullName) {
 
+        private void formMain_DragEnter(object sender, DragEventArgs e)
+        {
+            List<string> allowExts = new List<string> { ".srt", ".sub", ".ass", ".ssa", ".ttml", ".vtt", ".xml", ".srt" };
+
+            string[] filesFullName = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)
+                && allowExts.Contains(Path.GetExtension(filesFullName[0]))
+                && this.state != SubtitleSpeakerState.CountDowning
+                && this.state != SubtitleSpeakerState.Playing
+                && this.state != SubtitleSpeakerState.Paused)
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void formMain_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] filesFullName = (string[])e.Data.GetData(DataFormats.FileDrop);
+            this.OpenFile(filesFullName[0]);
+        }
+
+        private void OpenFile(string fileFullName) 
+        {
             try
             {
                 //解析字幕
-                this.bilingualSubtitle = Parse(fileFullName);
+                this.bilingualSubtitle = this.ParseFile(fileFullName);
             }
             catch (Exception ex) 
             {
@@ -280,260 +424,212 @@ namespace SubtitleSpeaker
             this.buttonPlayOrPause.Enabled = true;
 
             //解锁字幕同步按钮
-            this.buttonAddSyncTime.Enabled = true;
             this.labelSyncTime.Enabled = true;
-            if (this.bilingualSubtitle.GetFirstTotalSeconds() > 0) 
+            this.buttonAddSyncTime.Enabled = true;
+            if (this.bilingualSubtitle.GetFirstTotalSeconds() > 0)
+            {
                 this.buttonSubSyncTime.Enabled = true;
+            }
             else
+            {
                 this.buttonSubSyncTime.Enabled = false;
+            }
 
             //重置字幕同步时间
             this.labelSyncTime.Text = "0";
 
             //重置当前时间
-            SetCurrentTime(0);
+            this.SetCurrentTotalSeconds(0);
 
-            //设置最后时间
-            SetLastTime(this.bilingualSubtitle.GetLastTotalSeconds());
+            //重置最后时间
+            this.SetLastTotalSeconds(this.bilingualSubtitle.GetLastTotalSeconds());
 
             //将当前时间标签的光标改为手，提示用户可以点击
             this.labelCurrentTime.Cursor = Cursors.Hand;
 
             //修改状态为 ready
-            this.subtitleSpeakerState = SubtitleSpeakerState.Ready;
-
+            this.state = SubtitleSpeakerState.Ready;
         }
         
-        private BilingualSubtitle Parse(string fileFullName)
+        private BilingualSubtitle ParseFile(string fileFullName)
         {
-            var fileStream = File.OpenRead(fileFullName);
+            FileStream fileStream = File.OpenRead(fileFullName);
 
-            var mostLikelyFormat = this.subParser.GetMostLikelyFormat(fileFullName);
+            // 猜测文件字符编码和字幕格式
+            Encoding encoding = CharsetDetector.DetectFromStream(fileStream).Detected.Encoding;
+            SubtitlesFormat mostLikelyFormat = this.subParser.GetMostLikelyFormat(fileFullName);
 
-            var encoding = CharsetDetector.DetectFromStream(fileStream).Detected.Encoding;
+            List<SubtitleItem> subtitleItems = this.subParser.ParseStream(fileStream, encoding, mostLikelyFormat);
 
-            var subItems = this.subParser.ParseStream(fileStream, encoding, mostLikelyFormat);
+            if (subtitleItems == null) throw new Exception("File Format Or Encoding Not Supported !");
 
-            if (subItems == null) throw new Exception("File Format Not Supported !");
-
-            return new BilingualSubtitle(subItems);
+            return new BilingualSubtitle(subtitleItems, this.mainLanguage, this.subLanguage);
         }
-        
-        private void formMain_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] filesFullName = (string[])e.Data.GetData(DataFormats.FileDrop);
-            OpenFile(filesFullName[0]);
-        }
-        
-        private void formMain_DragEnter(object sender, DragEventArgs e)
-        {
-           List<string> allowExts = new List<string>() ;
-            allowExts.Add(".srt");
-            allowExts.Add(".sub");
-            allowExts.Add(".ass");
-            allowExts.Add(".ssa");
-            allowExts.Add(".ttml");
-            allowExts.Add(".vtt");
-            allowExts.Add(".xml");
-            allowExts.Add(".srt");
-
-            string[] filesFullName = (string[])e.Data.GetData(DataFormats.FileDrop);
-           
-            if (
-                e.Data.GetDataPresent(DataFormats.FileDrop) 
-                && allowExts.Contains(Path.GetExtension(filesFullName[0]))
-                && this.subtitleSpeakerState != SubtitleSpeakerState.Playing
-                && this.subtitleSpeakerState != SubtitleSpeakerState.Paused
-                )
-                e.Effect = DragDropEffects.Copy;
-            else
-                e.Effect = DragDropEffects.None;
-        }
-
 
 
         //播放、暂停、停止相关
         private void buttonPlayOrPause_Click(object sender, EventArgs e)
         {   
-            if (this.subtitleSpeakerState == SubtitleSpeakerState.Ready || this.subtitleSpeakerState == SubtitleSpeakerState.Paused)
+            if (this.state == SubtitleSpeakerState.Ready || this.state == SubtitleSpeakerState.Paused)
             {
-                if (this.toolStripMenuItemCountDownPlay.Checked && subtitleSpeakerState!= SubtitleSpeakerState.CountDown)
+                if (this.toolStripMenuItemCountDownPlay.Checked)
                 { 
-                    CountDownPlay(); 
+                    this.CountDownPlay(); 
                 }
-                else { 
-                    Play();
+                else 
+                { 
+                    this.Play();
                 }
             }
-            else if (this.subtitleSpeakerState == SubtitleSpeakerState.Playing)
+            else if (this.state == SubtitleSpeakerState.Playing)
             {
-                Pause();
+                this.Pause();
             }
         }
-        
-        private void Pause()
+
+        private void buttonStop_Click(object sender, EventArgs e)
         {
-            this.timer.Stop();
-            this.speechSynthesizer.Pause();
-            this.subtitleSpeakerState = SubtitleSpeakerState.Paused;
-            this.buttonPlayOrPause.Image = global::SubtitleSpeaker.Properties.Resources.paly;
-            //this.buttonPlayOrPause.Text = "▶︎";
+            if (this.state == SubtitleSpeakerState.Playing || this.state == SubtitleSpeakerState.Paused)
+            {
+                this.Stop();
+            }
         }
         
         private void Play()
         {
-            if (this.subtitleSpeakerState == SubtitleSpeakerState.Ready)
+            if (this.state == SubtitleSpeakerState.Ready)
             {
                 this.buttonStop.Enabled = true;
                 this.buttonOpenFile.Enabled = false;
             }
-            else if (this.subtitleSpeakerState == SubtitleSpeakerState.Paused)
+            else if (this.state == SubtitleSpeakerState.Paused)
             {
                 this.speechSynthesizer.Resume();
             }
             this.timer.Start();
-            this.subtitleSpeakerState = SubtitleSpeakerState.Playing;
-            this.buttonPlayOrPause.Image = global::SubtitleSpeaker.Properties.Resources.pause;
-            //this.buttonPlayOrPause.Text = "⏸️";
+            this.buttonPlayOrPause.Image = Properties.Resources.pause;
+            this.state = SubtitleSpeakerState.Playing;
         }
         
         private void CountDownPlay() 
         {
-            SubtitleSpeakerState tempState = this.subtitleSpeakerState;
-            this.subtitleSpeakerState = SubtitleSpeakerState.CountDown;
-            int i = 3;
+            //原来的状态：可能是 paused 或 ready
+            SubtitleSpeakerState tempState = this.state; 
+            
+            //临时计时器
             Timer tempTimer = new Timer(1000);
             tempTimer.AutoReset = true;
             tempTimer.Enabled = true;
-            tempTimer.Elapsed += new ElapsedEventHandler((object sender, ElapsedEventArgs e) => {
+            
+            int i = 3;
+            tempTimer.Elapsed += new ElapsedEventHandler((object sender, ElapsedEventArgs e) => 
+            {
+                this.state = SubtitleSpeakerState.CountDowning;
+
                 this.speechSynthesizer.SpeakAsyncCancelAll();
                 this.speechSynthesizer.Resume();
+                this.speechSynthesizer.Rate = 0;
                 this.speechSynthesizer.SpeakAsync(i.ToString());
+                
                 i--;
                 if (i == 0) 
                 {
                     tempTimer.Stop();
-                    this.subtitleSpeakerState = tempState;
-                    Invoke(new TimeUpDelegate(Play));
+                    this.state = tempState;
+                    this.Invoke(new TimeUpDelegate(this.Play));
                 }
             });
         }
-        
-        private void buttonStop_Click(object sender, EventArgs e)
+
+        private void Pause()
         {
-            if (this.subtitleSpeakerState == SubtitleSpeakerState.Playing || this.subtitleSpeakerState == SubtitleSpeakerState.Paused) 
-            {
-                Stop();
-            }
-            
+            this.timer.Stop();
+            this.speechSynthesizer.Pause();
+            this.buttonPlayOrPause.Image = Properties.Resources.paly;
+            this.state = SubtitleSpeakerState.Paused;
         }
-        
+
         private void Stop()
         {
-            // 1. 停止播放
+            // 1. 停止计时
+            this.timer.Stop();
+
+            // 2. 停止声音
             this.speechSynthesizer.SpeakAsyncCancelAll();
             this.speechSynthesizer.Resume(); //处理暂停的时候 CancelAll ,再次播放时没声音
 
-            // 2. 停止计时
-            this.timer.Stop();
-
             // 3. 将当前时间设置为 0 
-            SetCurrentTime(0);
+            this.SetCurrentTotalSeconds(0);
 
-            // 4. 将当前字幕滚到首行
+            // 4. 清除行高亮
             this.richTextBoxSubtitle.Select(0, 0);
-            this.richTextBoxSubtitle.ScrollToCaret();
 
             // 5. 将播放或暂停按钮图标设置为播放图标 
-            this.buttonPlayOrPause.Image = global::SubtitleSpeaker.Properties.Resources.paly;
-            //this.buttonPlayOrPause.Text = "▶︎";
+            this.buttonPlayOrPause.Image = Properties.Resources.paly;
 
-            // 6. 解除打开文件按钮 
-            this.buttonOpenFile.Enabled = true;
-
-            // 7. 锁定停止播放按钮
+            // 6. 锁定停止播放按钮
             this.buttonStop.Enabled = false;
 
-            // 8.修改状态
-            this.subtitleSpeakerState = SubtitleSpeakerState.Ready;
-        }
+            // 7. 解除打开文件按钮 
+            this.buttonOpenFile.Enabled = true;
 
+            // 8.修改状态
+            this.state = SubtitleSpeakerState.Ready;
+        }
 
 
         //修改当前时间相关
         private void labelSetCurrentTime_Click(object sender, EventArgs e)
         {
-            if (this.subtitleSpeakerState == SubtitleSpeakerState.UnReady) return;
-
-            FormSetCurrentTime formSetCurrentTime = new FormSetCurrentTime();
-            formSetCurrentTime.ShowDialog(this);
+            if (this.state != SubtitleSpeakerState.UnReady)
+            {
+                this.formSetCurrentTime.ShowDialog(this);
+            }
         }
         
         private void richTextBoxSubtitle_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (this.subtitleSpeakerState == SubtitleSpeakerState.UnReady) return;
+            if (this.state != SubtitleSpeakerState.UnReady)
+            {
+                //获取双击的行号
+                int firstCharIndex = this.richTextBoxSubtitle.GetFirstCharIndexOfCurrentLine();
+                int lineIndex = this.richTextBoxSubtitle.GetLineFromCharIndex(firstCharIndex);
 
-            int firstCharIndex = this.richTextBoxSubtitle.GetFirstCharIndexOfCurrentLine();
-            int lineIndex = this.richTextBoxSubtitle.GetLineFromCharIndex(firstCharIndex);
+                //获取行号所在的字幕的开始时间
+                TimeSpan currentTime = TimeSpan.Parse(this.richTextBoxSubtitle.Lines[lineIndex].Substring(1, 8));
 
-            //高亮所在行
-            //Highlight(lineIndex);
+                //设为为当前时间
+                this.SetCurrentTotalSeconds((int)currentTime.TotalSeconds);
 
-            //获取行号所在的字幕的开始时间，并设为当前时间
-            TimeSpan timeSpan = TimeSpan.Parse(this.richTextBoxSubtitle.Lines[lineIndex].Substring(1, 8));
-            SetCurrentTime((int)timeSpan.TotalSeconds);
-
-            //停止之前未播放完的声音
-            this.speechSynthesizer.SpeakAsyncCancelAll();
+                //停止之前未播放完的声音
+                this.speechSynthesizer.SpeakAsyncCancelAll();
+            }
         }
-
-
-        
-       //语速、音量、说话人控制相关
-
-        private void toolStripMenuItemAutoRate_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!this.toolStripMenuItemAutoRate.Checked)
-                this.speechSynthesizer.Rate = this.trackBarRate.Value;
-        }
-
-        private void trackBarVolume_ValueChanged(object sender, EventArgs e)
-        {
-            this.speechSynthesizer.Volume = this.trackBarVolume.Value;
-        }
-        
-        private void trackBarRate_ValueChanged(object sender, EventArgs e)
-        {
-            this.speechSynthesizer.Rate = this.trackBarRate.Value;
-        }
-       
-        private void comboBoxSelectVoices_SelectedValueChanged(object sender, EventArgs e)
-        {
-            this.speechSynthesizer.SelectVoice((string)this.comboBoxInstalledVoices.SelectedItem);
-        }
-
 
 
         // 字幕时间同步相关
         private void buttonAddSyncTime_Click(object sender, EventArgs e)
         {
-            SubtitleTimeSync(1);
+            this.SubtitleTimeSync(1);
         }
         
         private void buttonSubSyncTime_Click(object sender, EventArgs e)
         {
-            SubtitleTimeSync(-1);
+            this.SubtitleTimeSync(-1);
         }
         
         private void labelSyncTime_DoubleClick(object sender, EventArgs e)
         {
-            int v = int.Parse(this.labelSyncTime.Text);
-            if (v!=0)
-                SubtitleTimeSync(-v);
+            int offsetSeconds = int.Parse(this.labelSyncTime.Text);
+            if (offsetSeconds != 0)
+            { 
+                this.SubtitleTimeSync(-offsetSeconds);
+            }
         }
         
-        private void SubtitleTimeSync(int offsetSeconds) {
-
+        private void SubtitleTimeSync(int offsetSeconds) 
+        {
+            //获取当前行号
             int firstCharIndex = this.richTextBoxSubtitle.GetFirstCharIndexOfCurrentLine();
             int lineIndex = this.richTextBoxSubtitle.GetLineFromCharIndex(firstCharIndex);
 
@@ -543,22 +639,31 @@ namespace SubtitleSpeaker
             //更新显示修改过后的字幕
             this.richTextBoxSubtitle.Text = this.bilingualSubtitle.ToString();
 
+            //可能需要更新当前时间
+            if (this.currentTimeTotalSeconds > this.bilingualSubtitle.GetLastTotalSeconds())
+            {
+                this.SetCurrentTotalSeconds(this.bilingualSubtitle.GetLastTotalSeconds());
+            }
+
             //更新最后时间
-            SetLastTime(this.bilingualSubtitle.GetLastTotalSeconds());
+            this.SetLastTotalSeconds(this.bilingualSubtitle.GetLastTotalSeconds());
 
             //高亮原来所在行
-            Highlight(lineIndex);
+            this.HighlightLine(lineIndex);
 
             //更新显示同步时间标签
-            int v = int.Parse(this.labelSyncTime.Text) + offsetSeconds;
-            if (v > 0)
-                this.labelSyncTime.Text = "+" + v.ToString();
+            offsetSeconds = int.Parse(this.labelSyncTime.Text) + offsetSeconds;
+            if (offsetSeconds > 0)
+            {
+                this.labelSyncTime.Text = "+" + offsetSeconds.ToString();
+            }
             else
-                this.labelSyncTime.Text =  v.ToString();
-            
+            {
+                this.labelSyncTime.Text = offsetSeconds.ToString();
+            }
 
             //更新按钮状态
-            if (this.bilingualSubtitle.GetFirstTotalSeconds() == 0)
+            if (this.bilingualSubtitle.GetFirstTotalSeconds() <= 0)
             {
                 this.buttonSubSyncTime.Enabled = false;
             }
@@ -569,21 +674,85 @@ namespace SubtitleSpeaker
         }
 
 
+        //语言、语速、音量、说话人、自动语速相关
+        public void ChangeLanguage(string mainLanguage, string subLanguage)
+        {
+            this.mainLanguage = mainLanguage;
+            this.subLanguage = subLanguage;
 
-        //工具
+            if (this.state != SubtitleSpeakerState.UnReady)
+            {
+                if (this.state == SubtitleSpeakerState.Playing || this.state == SubtitleSpeakerState.Paused)
+                {
+                    this.Stop();
+                }
+
+                this.bilingualSubtitle.Divide(mainLanguage, subLanguage);
+
+                //重置富文本框
+                this.richTextBoxSubtitle.Text = this.bilingualSubtitle.ToString();
+
+                //重置字幕同步按钮状态
+                if (this.bilingualSubtitle.GetFirstTotalSeconds() > 0)
+                    this.buttonSubSyncTime.Enabled = true;
+                else
+                    this.buttonSubSyncTime.Enabled = false;
+
+                //重置字幕同步时间
+                this.labelSyncTime.Text = "0";
+
+                //重置当前时间
+                this.SetCurrentTotalSeconds(0);
+
+                //重置最后时间
+                this.SetLastTotalSeconds(this.bilingualSubtitle.GetLastTotalSeconds());
+            }
+        }
+
+        public void ChangeVoice(string voiceNmae)
+        {
+            this.speechSynthesizer.SelectVoice(voiceNmae);
+        }
+
+        public void ChangeRate(int rate)
+        {
+            this.rate = rate;
+            this.speechSynthesizer.Rate = rate;
+
+            this.toolStripMenuItemAutoRate.Checked = false;
+        }
+
+        public void ChangeVolume(int volume)
+        {
+            this.speechSynthesizer.Volume = volume;
+        }
+
+        private void toolStripMenuItemAutoRate_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!this.toolStripMenuItemAutoRate.Checked)
+            {
+                this.speechSynthesizer.Rate = this.rate;
+            }
+        }
+
+
+        //导出分离后的次语言字幕
         private void richTextBoxFileName_DoubleClick(object sender, EventArgs e)
         {
+            //去除双击选中文本效果
             this.richTextBoxFileName.Select(0, 0);
-            if (subtitleSpeakerState != SubtitleSpeakerState.UnReady)
+
+            if (state != SubtitleSpeakerState.UnReady)
             {
-                this.saveFileDialog.FileName = Path.GetFileNameWithoutExtension(this.richTextBoxFileName.Text) + ".Oher.srt";
+                this.saveFileDialog.FileName = Path.GetFileNameWithoutExtension(this.richTextBoxFileName.Text) + "." + this.subLanguage + ".srt";
                 this.saveFileDialog.Filter = "|*.srt";
+               
                 if (this.saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        var other = File.Create(this.saveFileDialog.FileName);
-                        srtWriter.WriteStream(other, this.bilingualSubtitle.GetOtherLanguageSubtitle(), false);
+                        FileStream subSubtitle = File.Create(this.saveFileDialog.FileName);
+                        this.srtWriter.WriteStream(subSubtitle, this.bilingualSubtitle.GetSubSubtitleItems(), false);
                     }
                     catch (Exception ex)
                     {
@@ -595,51 +764,58 @@ namespace SubtitleSpeaker
             }
         }
 
+
+        //打开设置窗口
+        private void toolStripMenuItemOtherSetting_Click(object sender, EventArgs e)
+        {
+            this.formSetting.Show();
+            this.formSetting.WindowState = FormWindowState.Normal;
+            this.formSetting.Activate();
+        }
+
+        //切换字幕遮盖工具窗口
         private void toolStripMenuItemMaskTool_Click(object sender, EventArgs e)
         {
             if (this.toolStripMenuItemMaskTool.Checked)
             {
-                formMask.Hide();
+                this.formMask.Hide();
                 this.toolStripMenuItemMaskTool.Checked = false;
             }
             else
             {
-                formMask.Show();
+                this.formMask.Show();
                 this.toolStripMenuItemMaskTool.Checked = true;
             }
         }
 
 
-
-        // 其他
-        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        //拦截关闭按钮，转变成隐藏
+        private void formMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //拦截关闭按钮，转变成隐藏
             e.Cancel = true;
-            this.WindowState = FormWindowState.Minimized;
             this.Hide();
         }
 
+        //双击通知图标打开主页面
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                this.Show();
-                this.WindowState = FormWindowState.Normal;
-            }
-            else
-            {
-                this.WindowState = FormWindowState.Minimized;
-            }
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            this.Activate();
         }
 
+        //退出前保存用户配置
         private void toolStripMenuItemExit_Click(object sender, EventArgs e)
         {
-            // 保存配置
-            Properties.Settings.Default.FormMainAutoRate = this.toolStripMenuItemAutoRate.Checked;
-            Properties.Settings.Default.FormMainCountDownPlay = this.toolStripMenuItemCountDownPlay.Checked;
-            Properties.Settings.Default.FormMainVolume = this.trackBarVolume.Value;
-            Properties.Settings.Default.FormMainVoiceIndex = this.comboBoxInstalledVoices.SelectedIndex;
+            Properties.Settings.Default.FormMainMainLanguage = this.mainLanguage; //主语言
+            Properties.Settings.Default.FormMainSubLanguage = this.subLanguage; //次语言
+            Properties.Settings.Default.FormMainVoiceName = this.speechSynthesizer.Voice.Name; //说话人
+            Properties.Settings.Default.FormMainVolume = this.speechSynthesizer.Volume; //音量
+            Properties.Settings.Default.FormMainRate = this.rate; //语速
+
+            Properties.Settings.Default.FormMainAutoRate = this.toolStripMenuItemAutoRate.Checked; //是否开启自动语速
+            Properties.Settings.Default.FormMainCountDownPlay = this.toolStripMenuItemCountDownPlay.Checked; //是否开启倒计时播放
+
             Properties.Settings.Default.Save();
 
             //退出
@@ -647,7 +823,5 @@ namespace SubtitleSpeaker
             this.Dispose();
             Application.Exit();
         }
-
-        
     }
 }

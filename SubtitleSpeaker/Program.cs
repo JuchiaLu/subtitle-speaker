@@ -1,8 +1,6 @@
-using System;
+ï»¿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace SubtitleSpeaker
@@ -15,9 +13,7 @@ namespace SubtitleSpeaker
         [STAThread]
         static void Main()
         {
-
-
-            //»ñÈ¡ËùÓĞºÍµ±Ç°½ø³ÌÍ¬ÃûµÄ½ø³Ì
+            //è·å–æ‰€æœ‰å’Œå½“å‰è¿›ç¨‹åŒåçš„è¿›ç¨‹
             Process current = Process.GetCurrentProcess();
             Process[] processArr = Process.GetProcessesByName(current.ProcessName);
 
@@ -27,7 +23,7 @@ namespace SubtitleSpeaker
                 {
                     UnhideProcess(process);
 
-                    //ShowWindowAsync(process.MainWindowHandle, 1); //Õâ¶ÔÒş²ØµÄ´°¿ÚÎŞĞ§
+                    //ShowWindowAsync(process.MainWindowHandle, 1); //è¿™å¯¹éšè—çš„çª—å£æ— æ•ˆ
                     SetForegroundWindow(process.MainWindowHandle);
 
                     return;

@@ -12,7 +12,7 @@ namespace SubtitleSpeaker.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -145,13 +145,13 @@ namespace SubtitleSpeaker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int FormMainVoiceIndex {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FormMainVoiceName {
             get {
-                return ((int)(this["FormMainVoiceIndex"]));
+                return ((string)(this["FormMainVoiceName"]));
             }
             set {
-                this["FormMainVoiceIndex"] = value;
+                this["FormMainVoiceName"] = value;
             }
         }
         
@@ -164,6 +164,30 @@ namespace SubtitleSpeaker.Properties {
             }
             set {
                 this["FormMainRate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FormMainMainLanguage {
+            get {
+                return ((string)(this["FormMainMainLanguage"]));
+            }
+            set {
+                this["FormMainMainLanguage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FormMainSubLanguage {
+            get {
+                return ((string)(this["FormMainSubLanguage"]));
+            }
+            set {
+                this["FormMainSubLanguage"] = value;
             }
         }
     }

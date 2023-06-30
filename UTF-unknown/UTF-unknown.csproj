@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net40;netstandard1.0;netstandard1.3;netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;netstandard1.3;netstandard2.0;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -66,7 +66,7 @@ Features:
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/CharsetDetector/UTF-unknown</RepositoryUrl>
     <RootNamespace>UtfUnknown</RootNamespace>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>UtfUnknown.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 

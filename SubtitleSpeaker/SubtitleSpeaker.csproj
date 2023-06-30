@@ -9,6 +9,10 @@
     <Win32Resource />
     <Authors>juchia lu</Authors>
     <Copyright></Copyright>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,15 +24,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Form\FormMain.cs~RFb1508a0d.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Speech" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LanguageDetection\LanguageDetection.csproj" />
     <ProjectReference Include="..\SubtitlesParser\SubtitlesParser.csproj" />
     <ProjectReference Include="..\UTF-unknown\UTF-unknown.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Form\FormSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

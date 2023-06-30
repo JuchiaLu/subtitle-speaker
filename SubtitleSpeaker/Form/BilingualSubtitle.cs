@@ -1,177 +1,211 @@
-﻿using SubtitlesParser.Classes;
+﻿using LanguageDetection;
+using Newtonsoft.Json.Linq;
+using SubtitlesParser.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace SubtitleSpeaker
 {
     public class BilingualSubtitle
     {
-        public BilingualSubtitle(IEnumerable<SubtitleItem> subtitleItems)
+        public BilingualSubtitle(IEnumerable<SubtitleItem> subtitleItems, string mainLanguage, string subLanguage)
         {
-            subtitleItems = subtitleItems.OrderBy(item => item.StartTime);
+            this.subtitleItems = subtitleItems.OrderBy(item => item.StartTime);
             
-            int lineIndex = 0;
-            subtitleItems.ToList().ForEach(subtitleItem =>
+            this.Divide(mainLanguage, subLanguage);
+        }
+
+        //原始字幕条目
+        private readonly IEnumerable<SubtitleItem> subtitleItems = new List<SubtitleItem>();
+
+        //主语言字幕条目字典：key 是播放开始总秒数, value 是条目
+        private Dictionary<int, SubtitleItem> mainSubtitleItemDict = new Dictionary<int, SubtitleItem>();
+
+        //主语言字幕行号字典：key 是播放开始总秒数, value 是行号
+        private Dictionary<int, int> mainSubtitleLineDict = new Dictionary<int, int>();
+
+        //次语言字幕条目
+        private List<SubtitleItem> subSubtitleItems = new List<SubtitleItem>();
+
+
+        public void Divide(string mainLanguage, string subLanguage)
+        {
+            //清空原有数据
+            this.mainSubtitleItemDict.Clear();
+            this.mainSubtitleLineDict.Clear();
+            this.subSubtitleItems.Clear();
+
+            //重新初始化语言检测器
+            LanguageDetector languageDetector = new LanguageDetector();
+            if (mainLanguage.Equals(subLanguage))
             {
-                var main = new SubtitleItem();
-                var other = new SubtitleItem();
+                languageDetector.AddLanguages(mainLanguage);
+            }
+            else
+            {
+                languageDetector.AddLanguages(mainLanguage, subLanguage);
+            }
+
+            //分离主语言和次语言
+            int lineIndex = 0;
+            this.subtitleItems.ToList().ForEach(subtitleItem =>
+            {
+                SubtitleItem main = new SubtitleItem();
+                SubtitleItem sub = new SubtitleItem();
 
                 main.StartTime = subtitleItem.StartTime;
                 main.EndTime = subtitleItem.EndTime;
 
-                other.StartTime = subtitleItem.StartTime;
-                other.EndTime = subtitleItem.EndTime;
+                sub.StartTime = subtitleItem.StartTime;
+                sub.EndTime = subtitleItem.EndTime;
 
-                if (subtitleItem.PlaintextLines.Count >= 2)
+
+                if (subtitleItem.PlaintextLines.Count == 1) //有些双语字幕里，极小部分只有一行
                 {
-                    foreach (var plaintextLine in subtitleItem.PlaintextLines)
+                    main.PlaintextLines.Add(subtitleItem.PlaintextLines.First());
+                    sub.PlaintextLines.Add(subtitleItem.PlaintextLines.First());
+                }
+                else if(subtitleItem.PlaintextLines.Count > 1)
+                {
+                    foreach (string plaintextLine in subtitleItem.PlaintextLines)
                     {
-                        if ("zh-CN".Equals(System.Globalization.CultureInfo.CurrentCulture.Name))
+                        string detectedLanguage = languageDetector.Detect(plaintextLine);
+
+                        if (string.IsNullOrEmpty(detectedLanguage))
                         {
-                            if (Regex.IsMatch(plaintextLine, "[\u4e00-\u9fa5]")) //匹配中文
-                            {
-                                main.PlaintextLines.Add(plaintextLine);
-                            }
-                            else
-                            {
-                                other.PlaintextLines.Add(plaintextLine);
-                            }
+                            main.PlaintextLines.Add(plaintextLine);
+                            sub.PlaintextLines.Add(plaintextLine);
                         }
-                        else 
+                        else if (mainLanguage.Equals(detectedLanguage))
                         {
-                            if (Regex.IsMatch(plaintextLine, "[A-z]")) //匹配英文
-                            {
-                                main.PlaintextLines.Add(plaintextLine);
-                            }
-                            else
-                            {
-                                other.PlaintextLines.Add(plaintextLine);
-                            }
+                            main.PlaintextLines.Add(plaintextLine);
                         }
-                        
+                        else
+                        {
+                            sub.PlaintextLines.Add(plaintextLine);
+                        }
                     }
                 }
-                else //有些双语里面不规范,极小部分只有一行
+
+                int startTimeTotalSeconds = (int)TimeSpan.FromMilliseconds(main.StartTime).TotalSeconds;
+                if (this.mainSubtitleItemDict.TryAdd(startTimeTotalSeconds, main))
                 {
-                    main.PlaintextLines = subtitleItem.PlaintextLines;
-                    other.PlaintextLines = subtitleItem.PlaintextLines;
-                }
-                int startTimeTotalSeconds =(int)TimeSpan.FromMilliseconds(main.StartTime).TotalSeconds;
-                if (this.mainLanguage.TryAdd(startTimeTotalSeconds, main))// TODO 同一时间可能有多个字幕的处理
-                {
-                    this.mainLanguageIndex.TryAdd(startTimeTotalSeconds, lineIndex);
+                    this.mainSubtitleLineDict.TryAdd(startTimeTotalSeconds, lineIndex);
                     lineIndex++;
                 }
-                this.otherLanguage.Add(other);
+                //同一时间有多个字幕条目
+                else 
+                {
+                    SubtitleItem exist = this.mainSubtitleItemDict.GetValueOrDefault(startTimeTotalSeconds);
+                    exist.PlaintextLines.AddRange(main.PlaintextLines);
+                }
+
+                this.subSubtitleItems.Add(sub);
             });
         }
-
-        // key 是播放开始总秒数, value 是字幕
-        private Dictionary<int, SubtitleItem> mainLanguage = new Dictionary<int, SubtitleItem>();
-
-        // key 是播放开始总秒数, value 是行号
-        private Dictionary<int, int> mainLanguageIndex = new Dictionary<int, int>();
-
-        private List<SubtitleItem> otherLanguage = new List<SubtitleItem>();
 
 
         public bool Has(int startTimeTotalSeconds)
         {
-            return this.mainLanguage.ContainsKey(startTimeTotalSeconds);
+            return this.mainSubtitleItemDict.ContainsKey(startTimeTotalSeconds);
         }
+
 
         public int GetLineIndex(int startTimeTotalSeconds) 
         {
-            return this.mainLanguageIndex[startTimeTotalSeconds];
+            return this.mainSubtitleLineDict[startTimeTotalSeconds];
         }
 
         public int GetNearLineIndex(int startTimeTotalSeconds)
         {
-            foreach (var key in mainLanguageIndex.Keys)
+            foreach (int key in this.mainSubtitleLineDict.Keys)
             {
                 if (key >= startTimeTotalSeconds)
-                    return mainLanguageIndex[key];
+                { 
+                    return this.mainSubtitleLineDict[key];
+                }
             }
-            return mainLanguageIndex.Last().Value;
+            return this.mainSubtitleLineDict.Last().Value;
         }
 
-        public int GetSpeechLineTotalMilliseconds(int startTimeTotalSeconds) {
-            return this.mainLanguage[startTimeTotalSeconds].EndTime - this.mainLanguage[startTimeTotalSeconds].StartTime;
+        public string GetSpeechLine(int startTimeTotalSeconds)
+        {
+            return string.Join(" ", this.mainSubtitleItemDict[startTimeTotalSeconds].PlaintextLines);
         }
 
-        public string GetSpeechLine(int startTimeTotalSeconds) {
-            string s = "";
-            this.mainLanguage[startTimeTotalSeconds].PlaintextLines.ForEach(x => {
-                s += x;
-            });
-            return s;
+        public int GetSpeechLineDurationMilliseconds(int startTimeTotalSeconds) {
+            return this.mainSubtitleItemDict[startTimeTotalSeconds].EndTime - this.mainSubtitleItemDict[startTimeTotalSeconds].StartTime;
         }
+
 
         public int GetFirstTotalSeconds()
         {
-            return this.mainLanguage.First().Key;
+            return this.mainSubtitleItemDict.First().Key;
         }
 
         public int GetLastTotalSeconds() 
         {
-            return this.mainLanguage.Last().Key;
+            return this.mainSubtitleItemDict.Last().Key;
         }
+
+        public List<SubtitleItem> GetSubSubtitleItems()
+        {
+            return this.subSubtitleItems;
+        }
+
 
         public void TimeSync(int offsetSeconds)
         {
-            Dictionary<int, SubtitleItem> newMainLanguage = new Dictionary<int, SubtitleItem>();
-            Dictionary<int, int> newMainLanguageIndex = new Dictionary<int, int>();
+            Dictionary<int, SubtitleItem> newMainSubtitleItemDict = new Dictionary<int, SubtitleItem>();
+            Dictionary<int, int> newmainSubtitleLineDict = new Dictionary<int, int>();
 
             int lineIndex = 0;
-
-            foreach (var subtitleItem in this.mainLanguage.Values)
+            foreach (SubtitleItem subtitleItem in this.mainSubtitleItemDict.Values)
             {
                 subtitleItem.StartTime +=  offsetSeconds*1000;
                 subtitleItem.EndTime += offsetSeconds*1000;
 
                 int startTimeTotalSeconds = (int)TimeSpan.FromMilliseconds(subtitleItem.StartTime).TotalSeconds;
-                if (newMainLanguage.TryAdd(startTimeTotalSeconds, subtitleItem))
+                if (newMainSubtitleItemDict.TryAdd(startTimeTotalSeconds, subtitleItem))
                 {
-                    newMainLanguageIndex.TryAdd(startTimeTotalSeconds, lineIndex);
+                    newmainSubtitleLineDict.TryAdd(startTimeTotalSeconds, lineIndex);
                     lineIndex++;
                 }
+                //同一时间有多个字幕条目
+                else
+                {
+                    SubtitleItem exist = newMainSubtitleItemDict.GetValueOrDefault(startTimeTotalSeconds);
+                    exist.PlaintextLines.AddRange(subtitleItem.PlaintextLines);
+                }
             }
-            this.mainLanguage = newMainLanguage;
-            this.mainLanguageIndex = newMainLanguageIndex;
+            this.mainSubtitleItemDict = newMainSubtitleItemDict;
+            this.mainSubtitleLineDict = newmainSubtitleLineDict;
 
-            this.otherLanguage.ForEach(subtitleItem => {
+            this.subSubtitleItems.ForEach(subtitleItem => {
                 subtitleItem.StartTime += offsetSeconds * 1000;
                 subtitleItem.EndTime += offsetSeconds * 1000;
             });
         }
 
-        public List<SubtitleItem> GetOtherLanguageSubtitle() 
-        {
-            return this.otherLanguage;
-        }
-
         public override string ToString() {
             StringBuilder stringBuilder = new StringBuilder();
-            foreach (var subtitleItem in this.mainLanguage.Values)
+            foreach (SubtitleItem subtitleItem in this.mainSubtitleItemDict.Values)
             {
-                string formatTimecodeLine()
-                {
-                    TimeSpan start = TimeSpan.FromMilliseconds(subtitleItem.StartTime);
-                    //TimeSpan end = TimeSpan.FromMilliseconds(subtitleItem.EndTime);
-                    return $"({start:hh\\:mm\\:ss}) ";
-                }
+                TimeSpan start = TimeSpan.FromMilliseconds(subtitleItem.StartTime);
+                stringBuilder.Append($"({start:hh\\:mm\\:ss}) ");
 
-                stringBuilder.Append(formatTimecodeLine());
-                foreach (var line in subtitleItem.PlaintextLines)
-                {
-                    stringBuilder.Append(" ");
-                    stringBuilder.Append(line);
-                }
-                stringBuilder.AppendLine();
+                stringBuilder.Append(string.Join(" ", subtitleItem.PlaintextLines));
+
+                stringBuilder.Append(Environment.NewLine);
             }
+
+            if (stringBuilder.Length >= Environment.NewLine.Length)
+            {
+                stringBuilder.Length -= Environment.NewLine.Length;
+            }
+
             return stringBuilder.ToString();
         }
     }

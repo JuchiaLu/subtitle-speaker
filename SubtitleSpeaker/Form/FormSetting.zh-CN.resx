@@ -169,20 +169,11 @@
   <data name="toolStripMenuItemMaskTool.Size" type="System.Drawing.Size, System.Drawing">
     <value>153, 26</value>
   </data>
-  <data name="toolStripMenuItemMaskTool.Text" xml:space="preserve">
-    <value>遮挡工具</value>
-  </data>
   <data name="toolStripMenuItemAutoRate.Size" type="System.Drawing.Size, System.Drawing">
     <value>153, 26</value>
   </data>
-  <data name="toolStripMenuItemAutoRate.Text" xml:space="preserve">
-    <value>自动语速</value>
-  </data>
   <data name="toolStripMenuItemCountDownPlay.Size" type="System.Drawing.Size, System.Drawing">
     <value>153, 26</value>
-  </data>
-  <data name="toolStripMenuItemCountDownPlay.Text" xml:space="preserve">
-    <value>倒计时播放</value>
   </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
     <value>150, 6</value>
@@ -190,17 +181,23 @@
   <data name="toolStripMenuItemExit.Size" type="System.Drawing.Size, System.Drawing">
     <value>153, 26</value>
   </data>
-  <data name="toolStripMenuItemExit.Text" xml:space="preserve">
-    <value>退出</value>
-  </data>
   <data name="labelSpeaker.Size" type="System.Drawing.Size, System.Drawing">
     <value>69, 20</value>
+  </data>
+  <data name="labelSpeaker.Text" xml:space="preserve">
+    <value>说话人：</value>
   </data>
   <data name="labelVolume.Size" type="System.Drawing.Size, System.Drawing">
     <value>66, 20</value>
   </data>
+  <data name="labelVolume.Text" xml:space="preserve">
+    <value>音  量： </value>
+  </data>
   <data name="labelRate.Size" type="System.Drawing.Size, System.Drawing">
     <value>66, 20</value>
+  </data>
+  <data name="labelRate.Text" xml:space="preserve">
+    <value>语  速： </value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -247,7 +244,13 @@
         ipvrfhPEl2qtMPcy3xqV/HVdA/i4UmFmuyUY3d838TWN/wGFSVSHajZZNgAAAABJRU5ErkJggg==
 </value>
   </data>
-  <data name="toolStripMenuItemSetting.Text" xml:space="preserve">
+  <data name="$this.Text" xml:space="preserve">
     <value>设置</value>
+  </data>
+  <data name="labelMainLanguage.Text" xml:space="preserve">
+    <value>主语言：</value>
+  </data>
+  <data name="labelSubLanguage.Text" xml:space="preserve">
+    <value>次语言：</value>
   </data>
 </root>

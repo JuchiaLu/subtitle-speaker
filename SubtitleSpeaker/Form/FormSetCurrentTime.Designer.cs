@@ -137,6 +137,7 @@ namespace SubtitleSpeaker
             this.ShowInTaskbar = false;
             this.Load += new System.EventHandler(this.formSetCurrentTime_Load);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.formSetCurrentTime_KeyPress);
+            this.Shown += new System.EventHandler(this.formSetCurrentTime_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -69,7 +69,7 @@
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="buttonOpenFile.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+    <value>3</value>
   </data>
   <data name="&gt;&gt;buttonOpenFile.Name" xml:space="preserve">
     <value>buttonOpenFile</value>
@@ -81,7 +81,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buttonOpenFile.ZOrder" xml:space="preserve">
-    <value>16</value>
+    <value>11</value>
   </data>
   <data name="buttonPlayOrPause.Enabled" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -112,7 +112,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buttonPlayOrPause.ZOrder" xml:space="preserve">
-    <value>15</value>
+    <value>10</value>
   </data>
   <data name="buttonStop.Enabled" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -139,7 +139,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buttonStop.ZOrder" xml:space="preserve">
-    <value>14</value>
+    <value>9</value>
   </data>
   <data name="richTextBoxSubtitle.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 139</value>
@@ -154,7 +154,7 @@
     <value>776, 260</value>
   </data>
   <data name="richTextBoxSubtitle.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>11</value>
   </data>
   <data name="richTextBoxSubtitle.Text" xml:space="preserve">
     <value />
@@ -172,7 +172,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;richTextBoxSubtitle.ZOrder" xml:space="preserve">
-    <value>13</value>
+    <value>8</value>
   </data>
   <data name="richTextBoxFileName.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 97</value>
@@ -184,7 +184,7 @@
     <value>715, 34</value>
   </data>
   <data name="richTextBoxFileName.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
+    <value>10</value>
   </data>
   <data name="richTextBoxFileName.Text" xml:space="preserve">
     <value />
@@ -202,7 +202,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;richTextBoxFileName.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>7</value>
   </data>
   <data name="labelCurrentTime.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -217,7 +217,7 @@
     <value>226, 65</value>
   </data>
   <data name="labelCurrentTime.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
+    <value>7</value>
   </data>
   <data name="labelCurrentTime.Text" xml:space="preserve">
     <value>00:00:00</value>
@@ -232,7 +232,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelCurrentTime.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>6</value>
   </data>
   <data name="labelLastTime.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -247,7 +247,7 @@
     <value>226, 65</value>
   </data>
   <data name="labelLastTime.TabIndex" type="System.Int32, mscorlib">
-    <value>11</value>
+    <value>9</value>
   </data>
   <data name="labelLastTime.Text" xml:space="preserve">
     <value>00:00:00</value>
@@ -262,7 +262,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelLastTime.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>5</value>
   </data>
   <data name="labelArrows.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -277,7 +277,7 @@
     <value>109, 65</value>
   </data>
   <data name="labelArrows.TabIndex" type="System.Int32, mscorlib">
-    <value>12</value>
+    <value>8</value>
   </data>
   <data name="labelArrows.Text" xml:space="preserve">
     <value>--&gt;</value>
@@ -292,7 +292,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelArrows.ZOrder" xml:space="preserve">
-    <value>17</value>
+    <value>12</value>
   </data>
   <metadata name="openFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>499, 17</value>
@@ -304,7 +304,7 @@
     <value>776, 2</value>
   </data>
   <data name="progressBar.TabIndex" type="System.Int32, mscorlib">
-    <value>19</value>
+    <value>12</value>
   </data>
   <data name="&gt;&gt;progressBar.Name" xml:space="preserve">
     <value>progressBar</value>
@@ -316,58 +316,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;progressBar.ZOrder" xml:space="preserve">
-    <value>9</value>
-  </data>
-  <data name="trackBarVolume.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="trackBarVolume.Location" type="System.Drawing.Point, System.Drawing">
-    <value>902, 252</value>
-  </data>
-  <data name="trackBarVolume.Size" type="System.Drawing.Size, System.Drawing">
-    <value>151, 56</value>
-  </data>
-  <data name="trackBarVolume.TabIndex" type="System.Int32, mscorlib">
-    <value>20</value>
-  </data>
-  <data name="&gt;&gt;trackBarVolume.Name" xml:space="preserve">
-    <value>trackBarVolume</value>
-  </data>
-  <data name="&gt;&gt;trackBarVolume.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TrackBar, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;trackBarVolume.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;trackBarVolume.ZOrder" xml:space="preserve">
-    <value>18</value>
-  </data>
-  <data name="comboBoxInstalledVoices.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="comboBoxInstalledVoices.Location" type="System.Drawing.Point, System.Drawing">
-    <value>902, 186</value>
-  </data>
-  <data name="comboBoxInstalledVoices.MaxDropDownItems" type="System.Int32, mscorlib">
-    <value>20</value>
-  </data>
-  <data name="comboBoxInstalledVoices.Size" type="System.Drawing.Size, System.Drawing">
-    <value>151, 28</value>
-  </data>
-  <data name="comboBoxInstalledVoices.TabIndex" type="System.Int32, mscorlib">
-    <value>21</value>
-  </data>
-  <data name="&gt;&gt;comboBoxInstalledVoices.Name" xml:space="preserve">
-    <value>comboBoxInstalledVoices</value>
-  </data>
-  <data name="&gt;&gt;comboBoxInstalledVoices.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;comboBoxInstalledVoices.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;comboBoxInstalledVoices.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>4</value>
   </data>
   <metadata name="saveFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
@@ -388,7 +337,7 @@
     <value>24, 27</value>
   </data>
   <data name="labelSyncTime.TabIndex" type="System.Int32, mscorlib">
-    <value>22</value>
+    <value>5</value>
   </data>
   <data name="labelSyncTime.Text" xml:space="preserve">
     <value>0</value>
@@ -406,7 +355,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelSyncTime.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>3</value>
   </data>
   <data name="buttonAddSyncTime.Enabled" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -421,7 +370,7 @@
     <value>30, 30</value>
   </data>
   <data name="buttonAddSyncTime.TabIndex" type="System.Int32, mscorlib">
-    <value>23</value>
+    <value>6</value>
   </data>
   <data name="buttonAddSyncTime.Text" xml:space="preserve">
     <value>+</value>
@@ -436,7 +385,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buttonAddSyncTime.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>2</value>
   </data>
   <data name="buttonSubSyncTime.Enabled" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -451,7 +400,7 @@
     <value>30, 30</value>
   </data>
   <data name="buttonSubSyncTime.TabIndex" type="System.Int32, mscorlib">
-    <value>24</value>
+    <value>4</value>
   </data>
   <data name="buttonSubSyncTime.Text" xml:space="preserve">
     <value>-</value>
@@ -466,7 +415,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buttonSubSyncTime.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>1</value>
   </data>
   <metadata name="notifyIcon.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>179, 17</value>
@@ -474,6 +423,15 @@
   <metadata name="contextMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>310, 17</value>
   </metadata>
+  <data name="toolStripMenuItemSetting.Size" type="System.Drawing.Size, System.Drawing">
+    <value>196, 26</value>
+  </data>
+  <data name="toolStripMenuItemSetting.Text" xml:space="preserve">
+    <value>Setting</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>193, 6</value>
+  </data>
   <data name="toolStripMenuItemMaskTool.Size" type="System.Drawing.Size, System.Drawing">
     <value>196, 26</value>
   </data>
@@ -502,7 +460,7 @@
     <value>Exit</value>
   </data>
   <data name="contextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>197, 114</value>
+    <value>197, 146</value>
   </data>
   <data name="&gt;&gt;contextMenuStrip.Name" xml:space="preserve">
     <value>contextMenuStrip</value>
@@ -561,111 +519,6 @@
   <data name="notifyIcon.Visible" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="trackBarRate.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="trackBarRate.Location" type="System.Drawing.Point, System.Drawing">
-    <value>902, 314</value>
-  </data>
-  <data name="trackBarRate.Size" type="System.Drawing.Size, System.Drawing">
-    <value>151, 56</value>
-  </data>
-  <data name="trackBarRate.TabIndex" type="System.Int32, mscorlib">
-    <value>25</value>
-  </data>
-  <data name="&gt;&gt;trackBarRate.Name" xml:space="preserve">
-    <value>trackBarRate</value>
-  </data>
-  <data name="&gt;&gt;trackBarRate.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TrackBar, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;trackBarRate.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;trackBarRate.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="labelSpeaker.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="labelSpeaker.Location" type="System.Drawing.Point, System.Drawing">
-    <value>825, 189</value>
-  </data>
-  <data name="labelSpeaker.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 20</value>
-  </data>
-  <data name="labelSpeaker.TabIndex" type="System.Int32, mscorlib">
-    <value>26</value>
-  </data>
-  <data name="labelSpeaker.Text" xml:space="preserve">
-    <value>Voice: </value>
-  </data>
-  <data name="&gt;&gt;labelSpeaker.Name" xml:space="preserve">
-    <value>labelSpeaker</value>
-  </data>
-  <data name="&gt;&gt;labelSpeaker.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelSpeaker.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;labelSpeaker.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="labelVolume.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="labelVolume.Location" type="System.Drawing.Point, System.Drawing">
-    <value>825, 261</value>
-  </data>
-  <data name="labelVolume.Size" type="System.Drawing.Size, System.Drawing">
-    <value>73, 20</value>
-  </data>
-  <data name="labelVolume.TabIndex" type="System.Int32, mscorlib">
-    <value>27</value>
-  </data>
-  <data name="labelVolume.Text" xml:space="preserve">
-    <value>Volume: </value>
-  </data>
-  <data name="&gt;&gt;labelVolume.Name" xml:space="preserve">
-    <value>labelVolume</value>
-  </data>
-  <data name="&gt;&gt;labelVolume.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelVolume.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;labelVolume.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="labelRate.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="labelRate.Location" type="System.Drawing.Point, System.Drawing">
-    <value>825, 325</value>
-  </data>
-  <data name="labelRate.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 20</value>
-  </data>
-  <data name="labelRate.TabIndex" type="System.Int32, mscorlib">
-    <value>28</value>
-  </data>
-  <data name="labelRate.Text" xml:space="preserve">
-    <value>Rate: </value>
-  </data>
-  <data name="&gt;&gt;labelRate.Name" xml:space="preserve">
-    <value>labelRate</value>
-  </data>
-  <data name="&gt;&gt;labelRate.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelRate.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;labelRate.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -673,7 +526,7 @@
     <value>120, 120</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>801, 451</value>
+    <value>800, 451</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -720,9 +573,6 @@
         ipvrfhPEl2qtMPcy3xqV/HVdA/i4UmFmuyUY3d838TWN/wGFSVSHajZZNgAAAABJRU5ErkJggg==
 </value>
   </data>
-  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>
   </data>
@@ -746,6 +596,18 @@
   </data>
   <data name="&gt;&gt;notifyIcon.Type" xml:space="preserve">
     <value>System.Windows.Forms.NotifyIcon, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemSetting.Name" xml:space="preserve">
+    <value>toolStripMenuItemSetting</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemSetting.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
+    <value>toolStripSeparator2</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStripMenuItemMaskTool.Name" xml:space="preserve">
     <value>toolStripMenuItemMaskTool</value>

@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29324.140
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubtitlesParser", "SubtitlesParser\SubtitlesParser.csproj", "{6F33AA98-2275-4241-BBED-B3D02BDE5EBB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UTF-unknown", "UTF-unknown\UTF-unknown.csproj", "{533637CA-18E0-4CAD-B061-964F72E9CEFE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubtitleSpeaker", "SubtitleSpeaker\SubtitleSpeaker.csproj", "{97E9F862-6590-4FFB-B562-A893BD04D94F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanguageDetection", "LanguageDetection\LanguageDetection.csproj", "{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,18 @@ Global
 		{97E9F862-6590-4FFB-B562-A893BD04D94F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{97E9F862-6590-4FFB-B562-A893BD04D94F}.Release|x86.ActiveCfg = Release|Any CPU
 		{97E9F862-6590-4FFB-B562-A893BD04D94F}.Release|x86.Build.0 = Release|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Debug|x86.Build.0 = Debug|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Release|x86.ActiveCfg = Release|Any CPU
+		{EAC0E67E-E3F9-4676-9577-1073ABA71CC5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

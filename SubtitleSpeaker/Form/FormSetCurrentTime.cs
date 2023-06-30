@@ -16,9 +16,9 @@ namespace SubtitleSpeaker
         {
             FormMain owner = (FormMain)this.Owner;
 
-            this.lastTime = TimeSpan.FromSeconds(owner.GetLastTime());
+            this.lastTime = TimeSpan.FromSeconds(owner.GetLastTotalSeconds());
 
-            var currentTime = TimeSpan.FromSeconds(owner.GetCurrentTime());
+            TimeSpan currentTime = TimeSpan.FromSeconds(owner.GetCurrentTotalSeconds());
             this.textBoxHours.Text = $"{currentTime:hh}";
             this.textBoxMinutes.Text = $"{currentTime:mm}";
             this.textBoxSeconds.Text = $"{currentTime:ss}";
@@ -26,10 +26,16 @@ namespace SubtitleSpeaker
             //this.labelConfirm.Select();
         }
 
+        private void formSetCurrentTime_Shown(object sender, EventArgs e)
+        {
+            this.labelConfirm.Select();
+            this.textBoxHours.Focus();
+        }
+
         private void textBoxHours_KeyPress(object sender, KeyPressEventArgs e)
         {
             // 只接受数字、退格、回车 这几个键
-            if ((e.KeyChar < (char)Keys.D0 || e.KeyChar > (char)Keys.D9) && (e.KeyChar != (char)Keys.Back) && (e.KeyChar != (char)Keys.Enter)) 
+            if ((e.KeyChar < (char)Keys.D0 || e.KeyChar > (char)Keys.D9) && (e.KeyChar != (char)Keys.Back) && (e.KeyChar != (char)Keys.Enter))
             {
                 e.Handled = true;
                 return;
@@ -96,7 +102,7 @@ namespace SubtitleSpeaker
                 this.labelConfirm.Select();
                 e.Handled = true;
             }
-        }     
+        }
 
         private void textBoxHours_MouseEnter(object sender, EventArgs e)
         {
@@ -105,7 +111,7 @@ namespace SubtitleSpeaker
 
         private void textBoxHours_MouseLeave(object sender, EventArgs e)
         {
-            this.labelConfirm.Select();      
+            this.labelConfirm.Select();
         }
 
         private void textBoxMinutes_MouseEnter(object sender, EventArgs e)
@@ -273,14 +279,16 @@ namespace SubtitleSpeaker
         {
             this.labelConfirm.Select();
 
-            var currentTime = new TimeSpan(
-                0, 
+            TimeSpan currentTime = new TimeSpan(
+                0,
                 int.Parse(this.textBoxHours.Text),
                 int.Parse(this.textBoxMinutes.Text),
                 int.Parse(this.textBoxSeconds.Text)
                 );
-            SubtitleSpeaker.FormMain owner = (SubtitleSpeaker.FormMain)this.Owner;
-            owner.SetCurrentTime((int)currentTime.TotalSeconds);
+
+            FormMain owner = (FormMain)this.Owner;
+            owner.SetCurrentTotalSeconds((int)currentTime.TotalSeconds);
+
             this.Close();
         }
     }

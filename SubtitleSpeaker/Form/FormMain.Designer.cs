@@ -41,26 +41,20 @@ namespace SubtitleSpeaker
             this.labelArrows = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.trackBarVolume = new System.Windows.Forms.TrackBar();
-            this.comboBoxInstalledVoices = new System.Windows.Forms.ComboBox();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.labelSyncTime = new System.Windows.Forms.Label();
             this.buttonAddSyncTime = new System.Windows.Forms.Button();
             this.buttonSubSyncTime = new System.Windows.Forms.Button();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItemSetting = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemMaskTool = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemAutoRate = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemCountDownPlay = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.trackBarRate = new System.Windows.Forms.TrackBar();
-            this.labelSpeaker = new System.Windows.Forms.Label();
-            this.labelVolume = new System.Windows.Forms.Label();
-            this.labelRate = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarVolume)).BeginInit();
             this.contextMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarRate)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOpenFile
@@ -93,7 +87,6 @@ namespace SubtitleSpeaker
             // 
             this.richTextBoxSubtitle.BackColor = System.Drawing.Color.DarkSeaGreen;
             this.richTextBoxSubtitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxSubtitle.Cursor = System.Windows.Forms.Cursors.Default;
             this.richTextBoxSubtitle.DetectUrls = false;
             this.richTextBoxSubtitle.HideSelection = false;
             resources.ApplyResources(this.richTextBoxSubtitle, "richTextBoxSubtitle");
@@ -104,7 +97,6 @@ namespace SubtitleSpeaker
             // richTextBoxFileName
             // 
             this.richTextBoxFileName.BackColor = System.Drawing.Color.DarkSeaGreen;
-            this.richTextBoxFileName.Cursor = System.Windows.Forms.Cursors.Default;
             resources.ApplyResources(this.richTextBoxFileName, "richTextBoxFileName");
             this.richTextBoxFileName.Name = "richTextBoxFileName";
             this.richTextBoxFileName.ReadOnly = true;
@@ -140,24 +132,6 @@ namespace SubtitleSpeaker
             this.progressBar.Name = "progressBar";
             this.progressBar.Step = 1;
             // 
-            // trackBarVolume
-            // 
-            resources.ApplyResources(this.trackBarVolume, "trackBarVolume");
-            this.trackBarVolume.LargeChange = 10;
-            this.trackBarVolume.Maximum = 100;
-            this.trackBarVolume.Name = "trackBarVolume";
-            this.trackBarVolume.SmallChange = 10;
-            this.trackBarVolume.TickFrequency = 10;
-            this.trackBarVolume.Value = 90;
-            this.trackBarVolume.ValueChanged += new System.EventHandler(this.trackBarVolume_ValueChanged);
-            // 
-            // comboBoxInstalledVoices
-            // 
-            resources.ApplyResources(this.comboBoxInstalledVoices, "comboBoxInstalledVoices");
-            this.comboBoxInstalledVoices.FormattingEnabled = true;
-            this.comboBoxInstalledVoices.Name = "comboBoxInstalledVoices";
-            this.comboBoxInstalledVoices.SelectedValueChanged += new System.EventHandler(this.comboBoxSelectVoices_SelectedValueChanged);
-            // 
             // labelSyncTime
             // 
             resources.ApplyResources(this.labelSyncTime, "labelSyncTime");
@@ -188,6 +162,8 @@ namespace SubtitleSpeaker
             // 
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemSetting,
+            this.toolStripSeparator2,
             this.toolStripMenuItemMaskTool,
             this.toolStripMenuItemAutoRate,
             this.toolStripMenuItemCountDownPlay,
@@ -195,6 +171,17 @@ namespace SubtitleSpeaker
             this.toolStripMenuItemExit});
             this.contextMenuStrip.Name = "contextMenuStrip";
             resources.ApplyResources(this.contextMenuStrip, "contextMenuStrip");
+            // 
+            // toolStripMenuItemSetting
+            // 
+            this.toolStripMenuItemSetting.Name = "toolStripMenuItemSetting";
+            resources.ApplyResources(this.toolStripMenuItemSetting, "toolStripMenuItemSetting");
+            this.toolStripMenuItemSetting.Click += new System.EventHandler(this.toolStripMenuItemOtherSetting_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
             // 
             // toolStripMenuItemMaskTool
             // 
@@ -230,29 +217,6 @@ namespace SubtitleSpeaker
             resources.ApplyResources(this.toolStripMenuItemExit, "toolStripMenuItemExit");
             this.toolStripMenuItemExit.Click += new System.EventHandler(this.toolStripMenuItemExit_Click);
             // 
-            // trackBarRate
-            // 
-            resources.ApplyResources(this.trackBarRate, "trackBarRate");
-            this.trackBarRate.LargeChange = 1;
-            this.trackBarRate.Minimum = -10;
-            this.trackBarRate.Name = "trackBarRate";
-            this.trackBarRate.ValueChanged += new System.EventHandler(this.trackBarRate_ValueChanged);
-            // 
-            // labelSpeaker
-            // 
-            resources.ApplyResources(this.labelSpeaker, "labelSpeaker");
-            this.labelSpeaker.Name = "labelSpeaker";
-            // 
-            // labelVolume
-            // 
-            resources.ApplyResources(this.labelVolume, "labelVolume");
-            this.labelVolume.Name = "labelVolume";
-            // 
-            // labelRate
-            // 
-            resources.ApplyResources(this.labelRate, "labelRate");
-            this.labelRate.Name = "labelRate";
-            // 
             // FormMain
             // 
             this.AllowDrop = true;
@@ -260,14 +224,9 @@ namespace SubtitleSpeaker
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.BackColor = System.Drawing.Color.White;
-            this.Controls.Add(this.labelRate);
-            this.Controls.Add(this.labelVolume);
-            this.Controls.Add(this.labelSpeaker);
-            this.Controls.Add(this.trackBarRate);
             this.Controls.Add(this.buttonSubSyncTime);
             this.Controls.Add(this.buttonAddSyncTime);
             this.Controls.Add(this.labelSyncTime);
-            this.Controls.Add(this.comboBoxInstalledVoices);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.labelLastTime);
             this.Controls.Add(this.labelCurrentTime);
@@ -277,17 +236,14 @@ namespace SubtitleSpeaker
             this.Controls.Add(this.buttonPlayOrPause);
             this.Controls.Add(this.buttonOpenFile);
             this.Controls.Add(this.labelArrows);
-            this.Controls.Add(this.trackBarVolume);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "FormMain";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.formMain_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.formMain_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.formMain_DragEnter);
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarVolume)).EndInit();
             this.contextMenuStrip.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarRate)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -305,8 +261,6 @@ namespace SubtitleSpeaker
         private System.Windows.Forms.Label labelArrows;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.TrackBar trackBarVolume;
-        private System.Windows.Forms.ComboBox comboBoxInstalledVoices;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.Label labelSyncTime;
         private System.Windows.Forms.Button buttonAddSyncTime;
@@ -317,11 +271,9 @@ namespace SubtitleSpeaker
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemMaskTool;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemExit;
-        private System.Windows.Forms.TrackBar trackBarRate;
-        private System.Windows.Forms.Label labelSpeaker;
-        private System.Windows.Forms.Label labelVolume;
-        private System.Windows.Forms.Label labelRate;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemAutoRate;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemSetting;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 
