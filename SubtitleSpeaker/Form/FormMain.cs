@@ -147,18 +147,21 @@ namespace SubtitleSpeaker
                 this.subLanguage = Properties.Settings.Default.FormMainSubLanguage;
             }
 
-            
+
             //初始化语音合成器
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.FormMainVoiceName))
+            try
             {
-                try 
+                //解决获取不到所有安装的说话人
+                SpeechApiReflectionHelper.InjectOneCoreVoices(this.speechSynthesizer);
+                //从配置文件设置声音
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.FormMainVoiceName))
                 {
                     this.speechSynthesizer.SelectVoice(Properties.Settings.Default.FormMainVoiceName); //说话人
                 }
-                catch(Exception ex)
-                {
-                    //do nothing
-                }
+            }
+            catch (Exception ex)
+            {
+                //do nothing
             }
             this.rate = this.speechSynthesizer.Rate = Properties.Settings.Default.FormMainRate;  //语速
             this.speechSynthesizer.Volume = Properties.Settings.Default.FormMainVolume;  //音量
